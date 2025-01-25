@@ -1,0 +1,36 @@
+name: Codecov Coverage Upload
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+          cache-dependency-path: my-app/package-lock.json # ✅ Ensure correct dependency cache
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: my-app # ✅ Run inside my-app/
+
+      - name: Run Jest tests with coverage
+        run: npx jest --coverage
+        working-directory: my-app # ✅ Run inside my-app/
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # ✅ Set in GitHub repo settings
+          slug: HudsonLu/React-App-Testing
